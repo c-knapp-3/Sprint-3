@@ -114,7 +114,8 @@ public class SimpleGame extends Board {
         currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';
         System.out.println("Switching... the current player is " + currentPlayer);
     }
-  public void countSOS() {
+	
+    public void countSOS() {
     	if (currentPlayer == 'B') {
     		blueScore++;
     	}
