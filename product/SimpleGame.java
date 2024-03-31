@@ -2,8 +2,8 @@ package sprint3.product;
 
 public class SimpleGame extends Board {
 	
-	private Cell[][] board;   // 2D array to represent the game board
-	private GameState currentGameStatus;   // Tracks current state of game
+    private Cell[][] board;   // 2D array to represent the game board
+    private GameState currentGameStatus;   // Tracks current state of game
     private int boardSize;        // Dimension of the square board
     private int blueScore;        // Blue player's score
     private int redScore;         // Red player's score
