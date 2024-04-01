@@ -13,7 +13,7 @@ public class GeneralGame extends Board {
     private List<SOSEvent> foundSOSEvents;  // Tracks all SOS events found during game
     private Map<SOSEvent, Character> sosEventPlayers = new HashMap<>();  // Associates each SOS event w/ player that made it
     private Cell[][] board;   // 2D array to represent the game board
-    private GameState currentGameStatus;  // Tracks current state of game
+    private GameState currentGameState;  // Tracks current state of game
     private int boardSize;       // Dimension of the square board
     private int blueScore;        // Blue player's score
     private int redScore;        // Red player's score
@@ -44,7 +44,7 @@ public class GeneralGame extends Board {
                 board[i][j] = Cell.EMPTY;
             }
         }
-        currentGameStatus = GameState.PLAYING; // Reset game state & scores
+        currentGameState = GameState.PLAYING; // Reset game state & scores
         currentPlayer = 'B';	// Blue starts game
         blueScore = redScore = 0;    // Reset both player's scores
     }    
@@ -64,8 +64,7 @@ public class GeneralGame extends Board {
     public int getBoardSize() {
     	return boardSize;
     }
-  
-    
+     
     public void setCurrentPlayer(char player) {
         this.currentPlayer = player;
     }
@@ -74,9 +73,9 @@ public class GeneralGame extends Board {
         return currentPlayer;
     }
     
-    public GameState getCurrentGameStatus() {
-		return currentGameStatus;
-	}
+    public GameState getCurrentGameState() {
+	return currentGameState;
+    }
     
     public Cell getCell(int row, int column) {
         if (row >= 0 && row < boardSize && column >= 0 && column < boardSize)
@@ -106,7 +105,7 @@ public class GeneralGame extends Board {
     @Override
     public boolean makeMove(int row, int column, Cell cell) {
         // No move if game is already over
-        if (currentGameStatus != GameState.PLAYING) {
+        if (currentGameState != GameState.PLAYING) {
             System.out.println("Game over");
             return false;
         }    
@@ -127,10 +126,26 @@ public class GeneralGame extends Board {
         printScores();  
         printList();    
 
-        updateGameStatus(currentPlayer);        
+        updateGameState(currentPlayer);        
         return true;
     }
-  public void countSOS() {
+    
+    @Override
+    public void switchPlayers() {
+        currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';
+        System.out.println("Switching players... Current Player is " + currentPlayer);
+    }
+
+    public void printScores() {  // Print current scores for both players
+        System.out.println("Blue Score: " + blueScore);
+        System.out.println("Red Score: " + redScore);
+    }
+
+    public void printList() {  // Print list of SOS events found
+        foundSOSEvents.forEach(event -> System.out.println(event));
+    }
+       
+    public void countSOS() {
     	if (currentPlayer == 'B') {
     		blueScore++;
     	}
@@ -139,33 +154,33 @@ public class GeneralGame extends Board {
     	}
     }   
     
-    public void updateGameStatus(char turn) {
+    public void updateGameState(char turn) {
         boolean boardFull = isBoardFull();
 
         if (boardFull) {
             if (blueScore > redScore) {  // Blue wins
-                currentGameStatus = GameState.BLUE_WINS;
+                currentGameState = GameState.BLUE_WINS;
                 logWinner("Blue");
             } 
             else if (redScore > blueScore) {   // Red wins
-                currentGameStatus = GameState.RED_WINS;
+                currentGameState = GameState.RED_WINS;
                 logWinner("Red");
             } 
             else {                            // Tie game
-                currentGameStatus = GameState.DRAW;
+                currentGameState = GameState.DRAW;
                 logDraw();
             }
         }
     }
 
-    private void logWinner(String winner) {  
+    public void logWinner(String winner) {  
         System.out.println(winner + " WINS");
     }
 
-    private void logDraw() {               
+    public void logDraw() {               
         System.out.println("Tie Game");
     }
-    
+	
     public boolean isBoardFull() {
     	for (int row = 0; row < boardSize; row++) {
             for (int column = 0; column < boardSize; column++) {
@@ -177,7 +192,7 @@ public class GeneralGame extends Board {
     	return true;  // No empty cells are found, board is full
     }
     
-    private boolean eventInList(SOSEvent event, List<SOSEvent> eventList) {
+    public boolean eventInList(SOSEvent event, List<SOSEvent> eventList) {
         for (SOSEvent existingEvent : eventList) {
             if (existingEvent.equals(event)) {
                 return true; 
@@ -204,7 +219,7 @@ public class GeneralGame extends Board {
         return sosFound;   // True if at least one SOS event is found
     }
 
-    private boolean checkAndRecordSOS(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
+    public boolean checkAndRecordSOS(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
         int endRow = rowStart + 2 * rowDirection;  // Calculate end row of event
         int endColumn = columnStart + 2 * columnDirection;  // Calculate end column of event
 
@@ -229,7 +244,7 @@ public class GeneralGame extends Board {
     }
     
     // Convert numerical directions into strings describing the event's path for easier tracking
-    private String getDirectionString(int rowDirection, int columnDirection) {
+    public String getDirectionString(int rowDirection, int columnDirection) {
         if (rowDirection == 0) return "row";  // Horizontal event
         if (columnDirection == 0) return "column";  // Vertical event
         return rowDirection == 1 ? (columnDirection == 1 ? "diagTlBr" : "diagTrBl") : "";  // Diagonal events
