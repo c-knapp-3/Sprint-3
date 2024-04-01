@@ -13,7 +13,7 @@ public class GeneralGame extends Board {
     private List<SOSEvent> foundSOSEvents;  // Tracks all SOS events found during game
     private Map<SOSEvent, Character> sosEventPlayers = new HashMap<>();  // Associates each SOS event w/ player that made it
     private Cell[][] board;   // 2D array to represent the game board
-	private GameState currentGameStatus;  // Tracks current state of game
+    private GameState currentGameStatus;  // Tracks current state of game
     private int boardSize;       // Dimension of the square board
     private int blueScore;        // Blue player's score
     private int redScore;        // Red player's score
@@ -165,20 +165,6 @@ public class GeneralGame extends Board {
     private void logDraw() {               
         System.out.println("Tie Game");
     }
-    /*public void updateGameStatus(char turn) {		
-    	if (isBoardFull() && blueScore > redScore) {
-    		currentGameStatus = GameState.BLUE_WINS;
-    		System.out.println("Winner is " + currentGameStatus);    		
-    	}
-    	else if (isBoardFull() && redScore > blueScore) {
-    		currentGameStatus = GameState.RED_WINS;
-    		System.out.println("Winner is " + currentGameStatus);
-    	}
-    	else if (isBoardFull() && blueScore == redScore) {
-            currentGameStatus = GameState.DRAW;
-            System.out.println("Tie Game");
-        }
-    }*/
     
     public boolean isBoardFull() {
     	for (int row = 0; row < boardSize; row++) {
