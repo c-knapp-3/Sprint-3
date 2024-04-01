@@ -136,7 +136,7 @@ public class GeneralGame extends Board {
         System.out.println("Switching players... Current Player is " + currentPlayer);
     }
 
-    public void printScores() {  // Print current scores for both players
+    private void printScores() {  // Print current scores for both players
         System.out.println("Blue Score: " + blueScore);
         System.out.println("Red Score: " + redScore);
     }
@@ -173,11 +173,11 @@ public class GeneralGame extends Board {
         }
     }
 
-    public void logWinner(String winner) {  
+    private void logWinner(String winner) {  
         System.out.println(winner + " WINS");
     }
 
-    public void logDraw() {               
+    private void logDraw() {               
         System.out.println("Tie Game");
     }
 	
@@ -192,7 +192,7 @@ public class GeneralGame extends Board {
     	return true;  // No empty cells are found, board is full
     }
     
-    public boolean eventInList(SOSEvent event, List<SOSEvent> eventList) {
+    private boolean eventInList(SOSEvent event, List<SOSEvent> eventList) {
         for (SOSEvent existingEvent : eventList) {
             if (existingEvent.equals(event)) {
                 return true; 
@@ -219,7 +219,7 @@ public class GeneralGame extends Board {
         return sosFound;   // True if at least one SOS event is found
     }
 
-    public boolean checkAndRecordSOS(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
+    private boolean checkAndRecordSOS(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
         int endRow = rowStart + 2 * rowDirection;  // Calculate end row of event
         int endColumn = columnStart + 2 * columnDirection;  // Calculate end column of event
 
@@ -244,7 +244,7 @@ public class GeneralGame extends Board {
     }
     
     // Convert numerical directions into strings describing the event's path for easier tracking
-    public String getDirectionString(int rowDirection, int columnDirection) {
+    private String getDirectionString(int rowDirection, int columnDirection) {
         if (rowDirection == 0) return "row";  // Horizontal event
         if (columnDirection == 0) return "column";  // Vertical event
         return rowDirection == 1 ? (columnDirection == 1 ? "diagTlBr" : "diagTrBl") : "";  // Diagonal events
