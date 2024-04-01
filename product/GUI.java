@@ -35,28 +35,28 @@ import java.awt.Cursor;
 @SuppressWarnings("serial")
 public class GUI extends JFrame {
 
-	private SimpleGame simpleGame; 
+    private SimpleGame simpleGame; 
     private GeneralGame generalGame; 
     protected Board board; 
     protected int boardSize;
     
-	public static final int SYMBOL_STROKE_WIDTH = 8; 
-	public static final int CANVAS_SIZE = 300;
-	public int cellSize;
-	public int cellPadding;
-	public int symbolSize;
-	public char currentPlayerTurn;
-	Cell currentPlayerSymbol;
+    public static final int SYMBOL_STROKE_WIDTH = 8; 
+    public static final int CANVAS_SIZE = 300;
+    public int cellSize;
+    public int cellPadding;
+    public int symbolSize;
+    public char currentPlayerTurn;
+    Cell currentPlayerSymbol;
 
-	protected GameBoardCanvas gameBoardCanvas; 
-	protected JTextField textFieldCurrentTurn;
+    protected GameBoardCanvas gameBoardCanvas; 
+    protected JTextField textFieldCurrentTurn;
 	
-	protected JRadioButton buttonBlueS;
-	protected JRadioButton buttonBlueO;
-	protected ButtonGroup blueSelectionGroup; 
+    protected JRadioButton buttonBlueS;
+    protected JRadioButton buttonBlueO;
+    protected ButtonGroup blueSelectionGroup; 
 
-	protected JRadioButton buttonRedS;
-	protected JRadioButton buttonRedO;
+    protected JRadioButton buttonRedS;
+    protected JRadioButton buttonRedO;
     protected ButtonGroup redSelectionGroup;  
     protected ButtonGroup gameModeSelectionGroup; 
     protected JSpinner spinnerBoardSize; 
@@ -70,25 +70,25 @@ public class GUI extends JFrame {
     	setVisible(true);
     	setSize(450, 400); 
     	setBackground(Color.WHITE);		
-		getContentPane().setBackground(Color.WHITE);		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setContentPane();
-		pack(); 		
+	getContentPane().setBackground(Color.WHITE);		
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setContentPane();
+	pack(); 		
 		
-		// Initialize game objects
-		generalGame = new GeneralGame();
+	// Initialize game objects
+	generalGame = new GeneralGame();
         simpleGame = new SimpleGame();
         board = simpleGame;	
-	}
+    }
 	
-	public Board getBoard(){
-		return board;
-	}
+    public Board getBoard(){
+	return board;
+    }
 	
-	// Setup content pane with game components
-	protected void setContentPane(){	
+    // Setup content pane with game components
+    protected void setContentPane(){	
 		
-		gameBoardCanvas = new GameBoardCanvas();
+    	gameBoardCanvas = new GameBoardCanvas();
         gameBoardCanvas.setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
         Border borderGrid = BorderFactory.createLineBorder(Color.BLACK, 2);
         gameBoardCanvas.setBorder(borderGrid);
@@ -162,8 +162,8 @@ public class GUI extends JFrame {
         
         panelWest.add(labelBluePlayer);
         panelWest.add(buttonBlueS);
-        panelWest.add(buttonBlueO);  
-
+        panelWest.add(buttonBlueO); 
+        
         // Setup red player selection
         JLabel labelRedPlayer = new JLabel("<html><font color='red'>Red Player:</font></html>");
         labelRedPlayer.setFont(new Font("Consolas", Font.BOLD, 14));  
@@ -180,8 +180,8 @@ public class GUI extends JFrame {
         
         panelEast.add(labelRedPlayer);
         panelEast.add(buttonRedS);
-        panelEast.add(buttonRedO);   
-    
+        panelEast.add(buttonRedO);
+        
         // Configure main GUI layout
         Container ContentPane = getContentPane();
         ContentPane.setLayout(new BorderLayout());
@@ -231,141 +231,140 @@ public class GUI extends JFrame {
             gameBoardCanvas.repaint(); 
         });
         panelSouth.add(buttonNewGame);         				
-	}
+    }
 	
-	class GameBoardCanvas extends JPanel {
+    class GameBoardCanvas extends JPanel {
 	    
-	    GameBoardCanvas() {	   
-	    	// Listen for mouse clicks to handle player moves
-	        addMouseListener(new MouseAdapter() {
-	            @Override
-	            public void mouseClicked(MouseEvent e) {
-	                handleMouseClick(e);
-	            }
-	        });
-	    }
+	GameBoardCanvas() {	   
+	    // Listen for mouse clicks to handle player moves
+	    addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            handleMouseClick(e);
+	        }
+	    });
+	}
 	    
-	    // Process mouse click events on the game board
-	    private void handleMouseClick(MouseEvent e) {
+	// Process mouse click events on the game board
+	private void handleMouseClick(MouseEvent e) {
 	        
-	        if (board.getCurrentGameStatus() == GameState.PLAYING) {
-	            int rowSelected = e.getY() / cellSize;
-	            int columnSelected = e.getX() / cellSize;
+	    if (board.getCurrentGameState() == GameState.PLAYING) {
+	        int rowSelected = e.getY() / cellSize;
+	        int columnSelected = e.getX() / cellSize;
 	            
-	            if (board.getCell(rowSelected, columnSelected) == Cell.EMPTY) {
+	        if (board.getCell(rowSelected, columnSelected) == Cell.EMPTY) {
 	                processMove(rowSelected, columnSelected);
+	        }
+	    }
+	}
+	    
+	// Make move based on the selected cell & current player
+	private void processMove(int row, int col) {
+	        
+	    char currentPlayer = board.getCurrentPlayer();
+	    Cell playerSymbol = determinePlayerSymbol(currentPlayer);
+	        
+	    if (playerSymbol != null) {
+	        board.makeMove(row, col, playerSymbol);
+	        repaint();
+	        handleGameResult();
+	    }
+	}
+	    
+	// Determines proper symbol based on current player's choice
+	private Cell determinePlayerSymbol(char currentPlayer) {
+	    ButtonModel selection = (currentPlayer == 'B') ? blueSelectionGroup.getSelection() : redSelectionGroup.getSelection();
+	    return (selection != null && selection.getActionCommand() != null) ? Cell.valueOf(selection.getActionCommand()) : null;
+	}
+	    
+	@Override
+	protected void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    setBackground(Color.WHITE);
+	        
+	    int canvasSize = Math.min(getWidth(), getHeight());
+	    cellSize = canvasSize / board.getBoardSize();
+	    cellPadding = cellSize / 6;
+	    symbolSize = cellSize - cellPadding * 2;
+	        
+	    drawGridLines(g);
+	    drawBoard(g);
+	}
+	    
+	// Draws grid lines according to board size
+	private void drawGridLines(Graphics g) {
+	    g.setColor(Color.BLACK);
+	    int gridSize = getSize().width / board.getBoardSize();
+	        
+	    for (int i = 1; i < board.getBoardSize(); i++) {
+	        int pos = i * gridSize;
+	        g.drawLine(pos, 0, pos, getSize().height);
+	        g.drawLine(0, pos, getSize().width, pos);
+	    }
+	}
+	    
+	// Draws S and O symbols on the board
+	private void drawBoard(Graphics g) {
+	    Graphics2D g2d = (Graphics2D) g;
+	    g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+	        
+	    for (int row = 0; row < board.getBoardSize(); row++) {
+	        for (int col = 0; col < board.getBoardSize(); col++) {
+	            int x1 = col * cellSize + cellPadding;
+	            int y1 = row * cellSize + cellPadding;
+	   	    Cell cellValue = board.getCell(row, col);
+	            if (cellValue == Cell.S || cellValue == Cell.O) {
+	                drawSymbol(g2d, cellValue.name().charAt(0), x1, y1);
 	            }
 	        }
 	    }
+	}
 	    
-	    // Make move based on the selected cell & current player
-	    private void processMove(int row, int col) {
+	// Draw a symbol at specific cell coordinates
+	private void drawSymbol(Graphics2D g2d, char symbol, int x, int y) {
+	    String letter = String.valueOf(symbol);
 	        
-	        char currentPlayer = board.getCurrentPlayer();
-	        Cell playerSymbol = determinePlayerSymbol(currentPlayer);
+	    Font font = new Font("Lucida Console", Font.BOLD, cellSize > 30 ? symbolSize : 28);
 	        
-	        if (playerSymbol != null) {
-	            board.makeMove(row, col, playerSymbol);
-	            repaint();
-	            handleGameResult();
-	        }
-	    }
+	    // Center the symbol within the cell.
+	    int centerX = x + (cellSize - g2d.getFontMetrics(font).stringWidth(letter)) / 2;
+	    int centerY = y + (cellSize + g2d.getFontMetrics(font).getHeight()) / 2 - g2d.getFontMetrics(font).getDescent();
+	        
+	    g2d.setFont(font);
+	    g2d.drawString(letter, centerX, centerY);
+	}
 	    
-	    // Determines proper symbol based on current player's choice
-	    private Cell determinePlayerSymbol(char currentPlayer) {
-	        ButtonModel selection = (currentPlayer == 'B') ? blueSelectionGroup.getSelection() : redSelectionGroup.getSelection();
-	        return (selection != null && selection.getActionCommand() != null) ? Cell.valueOf(selection.getActionCommand()) : null;
-	    }
-	    
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	        super.paintComponent(g);
-	        setBackground(Color.WHITE);
-	        
-	        int canvasSize = Math.min(getWidth(), getHeight());
-	        cellSize = canvasSize / board.getBoardSize();
-	        cellPadding = cellSize / 6;
-	        symbolSize = cellSize - cellPadding * 2;
-	        
-	        drawGridLines(g);
-	        drawBoard(g);
-	    }
-	    
-	    // Draws grid lines according to board size
-	    private void drawGridLines(Graphics g) {
-	        g.setColor(Color.BLACK);
-	        int gridSize = getSize().width / board.getBoardSize();
-	        
-	        for (int i = 1; i < board.getBoardSize(); i++) {
-	            int pos = i * gridSize;
-	            g.drawLine(pos, 0, pos, getSize().height);
-	            g.drawLine(0, pos, getSize().width, pos);
-	        }
-	    }
-	    
-	    // Draws S and O symbols on the board
-	    private void drawBoard(Graphics g) {
-	        Graphics2D g2d = (Graphics2D) g;
-	        g2d.setStroke(new BasicStroke(SYMBOL_STROKE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-	        
-	        for (int row = 0; row < board.getBoardSize(); row++) {
-	            for (int col = 0; col < board.getBoardSize(); col++) {
-	                int x1 = col * cellSize + cellPadding;
-	                int y1 = row * cellSize + cellPadding;
-	                Cell cellValue = board.getCell(row, col);
-	                if (cellValue == Cell.S || cellValue == Cell.O) {
-	                    drawSymbol(g2d, cellValue.name().charAt(0), x1, y1);
-	                }
-	            }
-	        }
-	    }
-	    
-	    // Draw a symbol at specific cell coordinates
-	    private void drawSymbol(Graphics2D g2d, char symbol, int x, int y) {
-	        String letter = String.valueOf(symbol);
-	        
-	        Font font = new Font("Lucida Console", Font.BOLD, cellSize > 30 ? symbolSize : 28);
-	        
-	        // Center the symbol within the cell.
-	        int centerX = x + (cellSize - g2d.getFontMetrics(font).stringWidth(letter)) / 2;
-	        int centerY = y + (cellSize + g2d.getFontMetrics(font).getHeight()) / 2 - g2d.getFontMetrics(font).getDescent();
-	        
-	        g2d.setFont(font);
-	        g2d.drawString(letter, centerX, centerY);
-	    }
-	    
-	    //Update GUI based on game's current state and scores
-	    public void handleGameResult() {
-	        // Update the status message based on the game state
-	        switch (board.getCurrentGameStatus()) {
-	            case BLUE_WINS:
-	                textFieldCurrentTurn.setText("Blue Wins!");
-	                break;
-	            case RED_WINS:
-	                textFieldCurrentTurn.setText("Red Wins!");
-	                break;
-	            case DRAW:
-	                textFieldCurrentTurn.setText("Tie Game!");
-	                break;
-	            default:
-	                // Show which player's turn it is during an ongoing game.
-	                textFieldCurrentTurn.setText("Play: " + (board.getCurrentPlayer() == 'B' ? "Blue" : "Red"));
-	                break;
+	//Update GUI based on game's current state and scores
+	public void handleGameResult() {
+	    // Update the status message based on the game state
+	    switch (board.getCurrentGameState()) {
+	        case BLUE_WINS:
+	            textFieldCurrentTurn.setText("Blue Wins!");
+	            break;
+	        case RED_WINS:
+	            textFieldCurrentTurn.setText("Red Wins!");
+	            break;
+	        case DRAW:
+	            textFieldCurrentTurn.setText("Tie Game!");
+	            break;
+	        default:
+	            // Show which player's turn it is during an ongoing game.
+	            textFieldCurrentTurn.setText("Play: " + (board.getCurrentPlayer() == 'B' ? "Blue" : "Red"));
+	            break;
 	        }	        
 	        // Update scores for both players.
-	        textFieldScore.setText(String.format("Blue Score: %d, Red Score: %d", 
-	                                             board.getBlueScore(), board.getRedScore()));
+	        textFieldScore.setText(String.format("Blue Score: %d, Red Score: %d", board.getBlueScore(), board.getRedScore()));
 	        repaint();
 	    }
 	}
 	
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GUI gui = new GUI();
-                gui.setVisible(true);
-                gui.board.initializeBoard();
-            }
-		});
+	    SwingUtilities.invokeLater(new Runnable() {
+            	public void run() {
+                    GUI gui = new GUI();
+                    gui.setVisible(true);
+                    gui.board.initializeBoard();
+                }
+	    });
 	}
 }
