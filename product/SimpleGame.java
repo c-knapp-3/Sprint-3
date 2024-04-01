@@ -165,7 +165,7 @@ public class SimpleGame extends Board {
     }
 
     // Checks if there's an SOS pattern starting from a chosen cell, moving in a set direction
-    public boolean checkDirection(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
+    private boolean checkDirection(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
         for (int i = 0; i < symbols.length; i++) {
             int row = rowStart + i * rowDirection;
             int column = columnStart + i * columnDirection;
