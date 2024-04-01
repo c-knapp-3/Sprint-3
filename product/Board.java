@@ -15,32 +15,32 @@ public abstract class Board {
         PLAYING, DRAW, BLUE_WINS, RED_WINS
     }
 
-    private GameState currentGameStatus;
+    private GameState currentGameState;
     
     public Board() {
-    	this.board = new Cell[3][3];
-    	this.boardSize = 3;        
+        this.board = new Cell[3][3];
+        this.boardSize = 3;        
         this.simpleGame = true; 
         this.currentPlayer = 'B'; 
-        this.currentGameStatus = GameState.PLAYING;
+        this.currentGameState = GameState.PLAYING;
         initializeBoard();
     }
 
     public Board(int size) {
-    	this.board = new Cell[size][size];
-    	this.boardSize = size;     
-    	this.simpleGame = true; 
+        this.board = new Cell[size][size];
+        this.boardSize = size;     
+        this.simpleGame = true; 
         this.currentPlayer = 'B'; 
-        this.currentGameStatus = GameState.PLAYING;        
+        this.currentGameState = GameState.PLAYING;        
         initializeBoard();
     }
         
     public Board(int size, boolean mode) {
-    	this.board = new Cell[size][size];
+        this.board = new Cell[size][size];
         this.boardSize = size;
         this.simpleGame = mode;
         this.currentPlayer = 'B'; // Blue player starts
-        this.currentGameStatus = GameState.PLAYING;        
+        this.currentGameState = GameState.PLAYING;        
         initializeBoard();
     }
 
@@ -57,7 +57,7 @@ public abstract class Board {
     }
     
     public void setBoardSize(int size) {
-    	this.board = new Cell[size][size];
+        this.board = new Cell[size][size];
         this.boardSize = size;        
         initializeBoard();
     }
@@ -82,8 +82,8 @@ public abstract class Board {
         return currentPlayer;
     }
 
-    public GameState getCurrentGameStatus() {
-        return currentGameStatus;
+    public GameState getCurrentGameState() {
+        return currentGameState;
     }
     
     public Cell getCell(int row, int column) {
@@ -102,14 +102,12 @@ public abstract class Board {
             return false; // Invalid move
         }
         board[row][col] = cell;
-        switchPlayers();
-        //currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';
+        switchPlayers();     
         return true;
     }
     
-    public void switchPlayers() {
-        // Toggle the current player from 'B' to 'R', or from 'R' to 'B'
-        currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';
+    public void switchPlayers() {        
+        currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';   // Toggle current player from 'B' to 'R', or from 'R' to 'B'
     }
 
     public void countSOS() {
@@ -121,7 +119,7 @@ public abstract class Board {
     }
    
     protected abstract void newGame();
-    protected abstract void updateGameStatus(char player);
+    protected abstract void updateGameState(char player);
     protected abstract int getBlueScore();
     protected abstract int getRedScore();
     protected abstract boolean hasSOS();
