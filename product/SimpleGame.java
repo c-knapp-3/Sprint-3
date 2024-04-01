@@ -3,7 +3,7 @@ package sprint3.product;
 public class SimpleGame extends Board {
 	
     private Cell[][] board;   // 2D array to represent the game board
-    private GameState currentGameStatus;   // Tracks current state of game
+    private GameState currentGameState;   // Tracks current state of game
     private int boardSize;        // Dimension of the square board
     private int blueScore;        // Blue player's score
     private int redScore;         // Red player's score
@@ -30,7 +30,7 @@ public class SimpleGame extends Board {
                 board[i][j] = Cell.EMPTY;     // Set all cells to EMPTY
             }
         }
-        currentGameStatus = GameState.PLAYING; // Set status to PLAYING
+        currentGameState = GameState.PLAYING; // Set status to PLAYING
         currentPlayer = 'B';	    // Blue starts the game
         blueScore = redScore = 0;              // Reset both player's scores
     }    
@@ -57,9 +57,9 @@ public class SimpleGame extends Board {
         return currentPlayer;
     }
     
-    public GameState getCurrentGameStatus() {
-		return currentGameStatus;
-	}
+    public GameState getCurrentGameState() {
+		return currentGameState;
+    }
 
     public Cell getCell(int row, int column) {
         if (row >= 0 && row < boardSize && column >= 0 && column < boardSize)
@@ -90,14 +90,14 @@ public class SimpleGame extends Board {
     @Override
     public boolean makeMove(int row, int column, Cell cell) {
         
-        if (currentGameStatus != GameState.PLAYING) {
+        if (currentGameState != GameState.PLAYING) {
             System.out.println("Game over");
             return false;
         }
         if (row >= 0 && row < boardSize && column >= 0 && column < boardSize && getCell(row, column) == Cell.EMPTY) {
             board[row][column] = cell;      // Place the cell      
-            updateGameStatus(currentPlayer);   // Check for win/tie status        
-            if (currentGameStatus == GameState.PLAYING) {
+            updateGameState(currentPlayer);   // Check for win/tie status        
+            if (currentGameState == GameState.PLAYING) {
                 switchPlayers();
             }
             return true; // The move was successfully made.
@@ -114,7 +114,7 @@ public class SimpleGame extends Board {
         currentPlayer = (currentPlayer == 'B') ? 'R' : 'B';
         System.out.println("Switching... the current player is " + currentPlayer);
     }
-	
+   
     public void countSOS() {
     	if (currentPlayer == 'B') {
     		blueScore++;
@@ -124,13 +124,13 @@ public class SimpleGame extends Board {
     	}
     }    
 
-    public void updateGameStatus(char turn) {
+    public void updateGameState(char turn) {
     	if (hasSOS()) {        // If SOS Event detected, update game status to indicate winner
-            currentGameStatus = (turn == 'B') ? GameState.BLUE_WINS : GameState.RED_WINS;
-            System.out.println(currentGameStatus + "!");
+            currentGameState = (turn == 'B') ? GameState.BLUE_WINS : GameState.RED_WINS;
+            System.out.println(currentGameState + "!");
         } 
     	else if (isBoardFull()) {  // If board is full and no SOS Event detected, game is a draw
-            currentGameStatus = GameState.DRAW;
+            currentGameState = GameState.DRAW;
             System.out.println("Tie game");
         }
     }
@@ -145,7 +145,7 @@ public class SimpleGame extends Board {
     	}
     	return true;  // No empty cells are found, board is full
     }
-  
+    
     public boolean hasSOS() { // Checks board for any SOS events in all directions
         
     	Cell[] symbols = {Cell.S, Cell.O, Cell.S};  // Pattern to check for
@@ -165,7 +165,7 @@ public class SimpleGame extends Board {
     }
 
     // Checks if there's an SOS pattern starting from a chosen cell, moving in a set direction
-    private boolean checkDirection(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
+    public boolean checkDirection(int rowStart, int columnStart, int rowDirection, int columnDirection, Cell[] symbols) {
         for (int i = 0; i < symbols.length; i++) {
             int row = rowStart + i * rowDirection;
             int column = columnStart + i * columnDirection;
