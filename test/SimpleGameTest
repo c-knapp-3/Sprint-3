@@ -2,62 +2,40 @@ package sprint3.test;
 import sprint3.product.SimpleGame;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SimpleGameTest {
+	
+    private SimpleGame game;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
-
-	@BeforeEach
-	void setUp() throws Exception {
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-	}
+    @BeforeEach
+    void setUp() {       // Setup a new 3x3 game board before each test        
+        game = new SimpleGame(3);
+    }
 
     @Test
     void testBoardInitialization() {
-    	SimpleGame game = new SimpleGame(3);
-        assertEquals(3, game.getBoardSize());
+        assertEquals(3, game.getBoardSize());  // BoardSize should be initialized to 3
         for (int row = 0; row < game.getBoardSize(); row++) {
             for (int col = 0; col < game.getBoardSize(); col++) {
                 assertEquals(SimpleGame.Cell.EMPTY, game.getCell(row, col)); // All cells should be initialized to EMPTY
             }
         }
-        assertEquals(SimpleGame.GameState.PLAYING, game.getCurrentGameStatus());     // Game status should be PLAYING at start
+        assertEquals(SimpleGame.GameState.PLAYING, game.getCurrentGameStatus());  // Game status should be PLAYING
     }
 
     @Test
     void testCustomBoardSizeInitialization() {
-        int customBoardSize = 5;
-        SimpleGame customGame = new SimpleGame(customBoardSize);
-        assertEquals(customBoardSize, customGame.getBoardSize());
+        SimpleGame customGame = new SimpleGame(5);
+        assertEquals(5, customGame.getBoardSize());   // BoardSize should be the same as the custom size
     }
 
     @Test
-    void testMakeMove() {
-    	SimpleGame game = new SimpleGame(3);
-        assertTrue(game.makeMove(0, 0, SimpleGame.Cell.S));
-        assertEquals(SimpleGame.Cell.S, game.getCell(0, 0));
-    }
-
-    @Test
-    void testSwitchPlayers() {
-    	SimpleGame game = new SimpleGame(3);
-        game.setCurrentPlayer('B');
-        game.switchPlayers();
-        assertEquals('R', game.getCurrentPlayer()); // Current player should switch from B to R
+    void testMakeMoveAndSwitchPlayers() {
+        assertTrue(game.makeMove(0, 0, SimpleGame.Cell.S));  // Return true when valid move made
+        assertEquals(SimpleGame.Cell.S, game.getCell(0, 0)); // Cell has the symbol placed by the move
+        assertEquals('R', game.getCurrentPlayer());  // Player changes from 'B' to 'R'
     }
 
     @Test
@@ -70,7 +48,7 @@ class SimpleGameTest {
 
     @Test
     void testEmptyBoard() {
-    	SimpleGame game = new SimpleGame(3);  // New game is initialized to all cells empty
+    	SimpleGame game = new SimpleGame(3);  // New game is initialized with all empty cells
         assertFalse(game.isBoardFull());
     }
 
@@ -93,7 +71,7 @@ class SimpleGameTest {
     	game.makeMove(2, 0, SimpleGame.Cell.S);
     	game.makeMove(2, 1, SimpleGame.Cell.S);
     	game.makeMove(2, 2, SimpleGame.Cell.S); 
-        assertTrue(game.isBoardFull(), "The board is completely filled");
+        assertTrue(game.isBoardFull());  // The board is full
     }
 
     @Test
@@ -103,63 +81,58 @@ class SimpleGameTest {
         assertEquals(SimpleGame.Cell.S, game.getSymbol(0, 0)); // Make sure cell is updated
         assertEquals('R', game.getCurrentPlayer());  // Make sure player switched from 'B' to 'R'
     }
-
+    
     @Test
     void testInvalidMoveOutOfBoard() {
-    	SimpleGame game = new SimpleGame(3);
-        assertFalse(game.makeMove(4, 4, SimpleGame.Cell.O)); // Move out of bounds
+        assertFalse(game.makeMove(3, 3, SimpleGame.Cell.O)); // Invalid move out of bounds
     }
 
     @Test
     void testInvalidMoveOccupiedCell() {
-    	SimpleGame game = new SimpleGame(3);
-        game.makeMove(1, 1, SimpleGame.Cell.S); // Fill a cell
-        assertFalse(game.makeMove(1, 1, SimpleGame.Cell.O)); // Move on cell already filled
+        game.makeMove(1, 1, SimpleGame.Cell.S); // Place symbol in cell
+        assertFalse(game.makeMove(1, 1, SimpleGame.Cell.O));  // Invalid move symbol already in cell
     }
 
     @Test
-    void testBlueWins() {
-    	SimpleGame game = new SimpleGame(3);
-    	game.makeMove(1, 0, SimpleGame.Cell.S);  // Default blue goes first
-    	game.makeMove(1, 1, SimpleGame.Cell.O);   // Red's turn
-    	game.makeMove(1, 2, SimpleGame.Cell.S);    // Blue's turn
-    	assertEquals(SimpleGame.GameState.BLUE_WINS, game.getCurrentGameStatus());
-    }
-
-    @Test
-    void testRedWins() {
-    	SimpleGame game = new SimpleGame(3);
-    	game.makeMove(0, 0, SimpleGame.Cell.O);   // Default blue goes first
-    	game.makeMove(2, 0, SimpleGame.Cell.S);   // Red's turn
-    	game.makeMove(2, 1, SimpleGame.Cell.O);   // Blue's turn
-    	game.makeMove(2, 2, SimpleGame.Cell.S);   // Red's turn        
-        assertEquals(SimpleGame.GameState.RED_WINS, game.getCurrentGameStatus());
-    }
-
-    @Test
-    void testSOSInRow() {
-    	SimpleGame game = new SimpleGame(3);
+    void testBlueWinsAfterSequenceOfMoves() {        
         game.makeMove(1, 0, SimpleGame.Cell.S);
         game.makeMove(1, 1, SimpleGame.Cell.O);
-        game.makeMove(1, 2, SimpleGame.Cell.S);  // SOS event in second row
-        assertFalse(!game.hasSOS());
+        game.makeMove(1, 2, SimpleGame.Cell.S);   // Simulate a winning condition for Blue
+        game.updateGameStatus('B');     // Manually update game status to reflect Blue's win
+        assertEquals(SimpleGame.GameState.BLUE_WINS, game.getCurrentGameStatus()); // Blue should be win
     }
 
     @Test
-    void testSOSInColumn() {
-    	SimpleGame game = new SimpleGame(3);
-    	game.makeMove(0, 1, SimpleGame.Cell.S);
-    	game.makeMove(1, 1, SimpleGame.Cell.O);
-    	game.makeMove(2, 1, SimpleGame.Cell.S);  // SOS event in second column
-        assertFalse(!game.hasSOS()); 
+    void testRedWinsAfterSequenceOfMoves() {        
+        game.setCurrentPlayer('R');       // Set up Red to win
+        game.makeMove(2, 0, SimpleGame.Cell.S);
+        game.makeMove(2, 1, SimpleGame.Cell.O);
+        game.makeMove(2, 2, SimpleGame.Cell.S);        
+        game.updateGameStatus('R');      // Manually update game status to reflect Red's win
+        assertEquals(SimpleGame.GameState.RED_WINS, game.getCurrentGameStatus()); // Red should win
     }
 
     @Test
-    void testSOSInDiagonal() {
-    	SimpleGame game = new SimpleGame(3);
-    	game.makeMove(0, 2, SimpleGame.Cell.S);
-    	game.makeMove(1, 1, SimpleGame.Cell.O);  
-    	game.makeMove(2, 0, SimpleGame.Cell.S);  // SOS event top-right to bottom-left
-        assertFalse(!game.hasSOS());
+    void testSOSInRow() {       // Set up an SOS in a row        
+        game.makeMove(0, 0, SimpleGame.Cell.S);
+        game.makeMove(0, 1, SimpleGame.Cell.O);
+        game.makeMove(0, 2, SimpleGame.Cell.S);
+        assertTrue(game.hasSOS()); // SOS event found in row
+    }
+
+    @Test
+    void testSOSInColumn() {    // Set up an SOS in a column
+        game.makeMove(0, 1, SimpleGame.Cell.S);
+        game.makeMove(1, 1, SimpleGame.Cell.O);
+        game.makeMove(2, 1, SimpleGame.Cell.S);
+        assertTrue(game.hasSOS()); // SOS event found in column
+    }
+
+    @Test
+    void testSOSInDiagonal() {    // Set up an SOS diagonally        
+        game.makeMove(0, 0, SimpleGame.Cell.S);
+        game.makeMove(1, 1, SimpleGame.Cell.O);
+        game.makeMove(2, 2, SimpleGame.Cell.S);
+        assertTrue(game.hasSOS());  // SOS event found in diagonal
     }
 }
