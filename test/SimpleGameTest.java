@@ -22,7 +22,7 @@ class SimpleGameTest {
                 assertEquals(SimpleGame.Cell.EMPTY, game.getCell(row, col)); // All cells should be initialized to EMPTY
             }
         }
-        assertEquals(SimpleGame.GameState.PLAYING, game.getCurrentGameStatus());  // Game status should be PLAYING
+        assertEquals(SimpleGame.GameState.PLAYING, game.getCurrentGameState());  // Game status should be PLAYING
     }
 
     @Test
@@ -98,8 +98,8 @@ class SimpleGameTest {
         game.makeMove(1, 0, SimpleGame.Cell.S);
         game.makeMove(1, 1, SimpleGame.Cell.O);
         game.makeMove(1, 2, SimpleGame.Cell.S);   // Simulate a winning condition for Blue
-        game.updateGameStatus('B');     // Manually update game status to reflect Blue's win
-        assertEquals(SimpleGame.GameState.BLUE_WINS, game.getCurrentGameStatus()); // Blue should be win
+        game.updateGameState('B');     // Manually update game status to reflect Blue's win
+        assertEquals(SimpleGame.GameState.BLUE_WINS, game.getCurrentGameState()); // Blue should be win
     }
 
     @Test
@@ -108,8 +108,8 @@ class SimpleGameTest {
         game.makeMove(2, 0, SimpleGame.Cell.S);
         game.makeMove(2, 1, SimpleGame.Cell.O);
         game.makeMove(2, 2, SimpleGame.Cell.S);        
-        game.updateGameStatus('R');      // Manually update game status to reflect Red's win
-        assertEquals(SimpleGame.GameState.RED_WINS, game.getCurrentGameStatus()); // Red should win
+        game.updateGameState('R');      // Manually update game status to reflect Red's win
+        assertEquals(SimpleGame.GameState.RED_WINS, game.getCurrentGameState()); // Red should win
     }
 
     @Test
